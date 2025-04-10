@@ -1,13 +1,48 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBPKSvahzB95RJP5qZ5e3qyrEfkpevF-FA",
+  authDomain: "project-01-1125e.firebaseapp.com",
+  databaseURL: "https://project-01-1125e-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "project-01-1125e",
+  storageBucket: "project-01-1125e.firebasestorage.app",
+  messagingSenderId: "707199014527",
+  appId: "1:707199014527:web:a0fb541816fc90c2cc114a",
+  measurementId: "G-RPC9D24ZZQ"};
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth()
+const provider = new GoogleAuthProvider()
+
 // console.log("Helló")
 const api= `https://project-01-1125e-default-rtdb.europe-west1.firebasedatabase.app/messages.json`
 const send = document.getElementById("send")
 const newMessage = document.getElementById("newmessage")
 const messages = document.getElementById("messages")
+const googleLogin = document.getElementById("googlelogin")
+const logOut = document.getElementById("logout")
+const userInfo = document.getElementById("userinfo")
+
+googleLogin.onclick = ()=>{
+  signInWithPopup(auth, provider)
+} 
+
+logOut.onclick = ()=>{
+  signOut(auth)
+}
+
+onAuthStateChanged(auth, user =>{
+  if(user){
+    userInfo.innerHTML = user.displayName
+  }else{
+    userInfo.innerHTML = "Senki sincs belépve"
+  }
+})
 
 
 async function sendMessage(){
   const body = {
-    user: "Attila",
+    user: "Ákos",
     date: Date.now(),
     message: newMessage.value
   }
@@ -51,7 +86,7 @@ async function getMessages(){
       console.log(m)
       const div = document.createElement("div")
       div.className="message"
-      if (m.user=="Attila") {
+      if (m.user=="Ákos") {
         div.classList.add("mymessage")
         m.user="Én"
       }
@@ -60,7 +95,7 @@ async function getMessages(){
       messages.appendChild(div) 
   })
 
-    document.getElementById('alja').scrollIntoView({ behavior: "smooth"})
+    // document.getElementById('alja').scrollIntoView({ behavior: "smooth"})
   }
 
 
