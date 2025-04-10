@@ -23,3 +23,7 @@
   clear: both;
   display: table;
 }
+
+.hidden{
+  display: none;
+}

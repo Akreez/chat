@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBPKSvahzB95RJP5qZ5e3qyrEfkpevF-FA",
   authDomain: "project-01-1125e.firebaseapp.com",
@@ -22,6 +22,8 @@ const messages = document.getElementById("messages")
 const googleLogin = document.getElementById("googlelogin")
 const logOut = document.getElementById("logout")
 const userInfo = document.getElementById("userinfo")
+const wrapper = document.getElementById("wrapper")
+const loggedUser = {}
 
 googleLogin.onclick = ()=>{
   signInWithPopup(auth, provider)
@@ -31,23 +33,39 @@ logOut.onclick = ()=>{
   signOut(auth)
 }
 
+function csere(){
+  googleLogin.classList.toggle("hidden")
+  logOut.classList.toggle("hidden")
+  userInfo.classList.toggle("hidden")
+  wrapper.classList.toggle("hidden")
+}
+
 onAuthStateChanged(auth, user =>{
   if(user){
+    loggedUser.displayName = user.displayName
+    loggedUser.token = user.accessToken
     userInfo.innerHTML = user.displayName
+    csere()
+
   }else{
     userInfo.innerHTML = "Senki sincs belépve"
+    loggedUser.displayName = ""
+    loggedUser.token = ""
+    csere()
   }
 })
 
 
 async function sendMessage(){
   const body = {
-    user: "Ákos",
+    user: loggedUser.displayName,
     date: Date.now(),
     message: newMessage.value
   }
 
-  const reposnse= await fetch(api,{
+  const ujCim= api+`?auth=${loggedUser.token}`
+  console.log(ujCim)
+  const reposnse= await fetch(ujCim,{
     method:"POST",
     body: JSON.stringify(body)
   })
@@ -86,7 +104,7 @@ async function getMessages(){
       console.log(m)
       const div = document.createElement("div")
       div.className="message"
-      if (m.user=="Ákos") {
+      if (m.user== loggedUser.displayName) {
         div.classList.add("mymessage")
         m.user="Én"
       }
